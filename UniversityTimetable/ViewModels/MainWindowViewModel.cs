@@ -42,13 +42,12 @@ namespace UniversityTimetable.ViewModels
 
         public MainWindowViewModel()
         {
-            #region Команды
-
-            CloseApplicationCommand = new LambdaCommand(OnCloseApplicationCommandExecuted, CanCloseApplicationCommandExecute);
             ITimetableService timetableService = new TimetableService();
             _timetableService = timetableService;
-            _timetableService.AddData();
+            //_timetableService.AddData();
 
+            #region Команды
+            CloseApplicationCommand = new LambdaCommand(OnCloseApplicationCommandExecuted, CanCloseApplicationCommandExecute);
             #endregion
         }
     }
