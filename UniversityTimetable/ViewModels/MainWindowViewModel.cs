@@ -1,5 +1,7 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using UniversityTimetable.Infrastructure.Commands;
 using UniversityTimetable.Services.Intefaces;
 using UniversityTimetable.ViewModels.Base;
@@ -8,6 +10,10 @@ namespace UniversityTimetable.ViewModels
 {
     internal class MainWindowViewModel : ViewModel
     {
+        private readonly ITimetableService _timetableService;
+
+        #region Свойства
+
         private string _title = "Расписание";
         public string Title
         {
@@ -15,7 +21,7 @@ namespace UniversityTimetable.ViewModels
             set => Set(ref _title, value);
         }
 
-        private readonly ITimetableService _timetableService;
+        #endregion
 
         #region Команды
 
@@ -31,12 +37,12 @@ namespace UniversityTimetable.ViewModels
         private bool CanCloseApplicationCommandExecute(object p) => true;
         #endregion
 
-        #region Datagrid Loaded
-        public ICommand ScheduleDatagridLoadedCommand { get; }
+        #region Клик по дням недели
+        public ICommand WeekDayClickCommand { get; }
 
-        private void OnScheduleDatagridLoadedCommandExecuted(object p)
+        private void OnWeekDayClickCommandExecuted(object p)
         {
-            MessageBox.Show("ff!");
+            
         }
         #endregion
 
@@ -48,7 +54,7 @@ namespace UniversityTimetable.ViewModels
 
             #region Команды
             CloseApplicationCommand = new LambdaCommand(OnCloseApplicationCommandExecuted, CanCloseApplicationCommandExecute);
-            ScheduleDatagridLoadedCommand = new LambdaCommand(OnScheduleDatagridLoadedCommandExecuted);
+            WeekDayClickCommand = new LambdaCommand(OnWeekDayClickCommandExecuted);
             #endregion
         }
     }

@@ -11,48 +11,155 @@
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         Background="{DynamicResource MaterialDesignPaper}"
         TextElement.FontWeight="Medium"
-        TextElement.FontSize="14"
+        TextElement.FontSize="14" WindowStyle="None"
         FontFamily="{materialDesign:MaterialDesignFont}"
         Title="{Binding Title}" Height="700" Width="1200">
 
-    <Grid Margin="15">
-        <StackPanel>
-            <DataGrid Name="ScheduleDatagrid" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="Loaded">
-                        <i:InvokeCommandAction Command="{Binding ScheduleDatagridLoadedCommand}" />
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
+    <Grid Margin="5">
 
-                <DataGrid.Columns>
-                    <DataGridTemplateColumn Header="Country"  Width="75">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Grid>
-                                    <TextBlock VerticalAlignment="Center" Text="{Binding Name}"/>
-                                </Grid>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="Name"  Width="75">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <DataGrid ItemsSource="{Binding Items}" IsReadOnly="True" AutoGenerateColumns="False" HeadersVisibility="None">
-                                    <DataGrid.Columns>
-                                        <DataGridTemplateColumn Width="*">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <TextBlock Text="{Binding Name}"/>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
-                                    </DataGrid.Columns>
-                                </DataGrid>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                </DataGrid.Columns>
-            </DataGrid>
-        </StackPanel>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <StackPanel HorizontalAlignment="Left" Margin="20 0">
+                <ComboBox FontSize="15" Width="50" Foreground="#FFA2A2A2" SelectedIndex="0" VerticalAlignment="Center">
+                    <ComboBoxItem Content="EN"/>
+                </ComboBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="20 0">
+                <Button Content="Расписание" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="#FFA2A2A2" FontSize="15" FontWeight="Bold" VerticalAlignment="Center"/>
+                <Button Content="Учебная нагрузка" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="#FFA2A2A2" FontSize="15" FontWeight="Bold" VerticalAlignment="Center"/>
+                <Button Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Center" Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}"
+                            Command="{Binding CloseApplicationCommand}">
+                    <materialDesign:PackIcon Kind="Power" Foreground="#FFA2A2A2" Width="25" Height="25" />
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="1">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="10 0" Grid.ColumnSpan="2">
+                <Button x:Name="Btn1" Width="150" Content="ПОНЕДЕЛЬНИК" Height="50" BorderBrush="{x:Null}" Foreground="#FF2196F3">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Click">
+                            <i:InvokeCommandAction Command="{Binding WeekDayClickCommand}" CommandParameter="{Binding ElementName=Btn1}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="{x:Null}"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter Property="Background" Value="Azure"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button x:Name="Btn2" Width="150" Content="ВТОРНИК" Height="50" BorderBrush="{x:Null}" Foreground="#FF2196F3">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Click">
+                            <i:InvokeCommandAction Command="{Binding WeekDayClickCommand}" CommandParameter="{Binding ElementName=Btn2}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="{x:Null}"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter Property="Background" Value="Azure"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button x:Name="Btn3" Width="150" Content="СРЕДА" Height="50" BorderBrush="{x:Null}" Foreground="#FF2196F3">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Click">
+                            <i:InvokeCommandAction Command="{Binding WeekDayClickCommand}" CommandParameter="{Binding ElementName=Btn3}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="{x:Null}"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter Property="Background" Value="Azure"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button x:Name="Btn4" Width="150" Content="ЧЕТВЕРГ" Height="50" BorderBrush="{x:Null}" Foreground="#FF2196F3">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Click">
+                            <i:InvokeCommandAction Command="{Binding WeekDayClickCommand}" CommandParameter="{Binding ElementName=Btn4}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="{x:Null}"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter Property="Background" Value="Azure"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button x:Name="Btn5" Width="150" Content="ПЯТНИЦА" Height="50" BorderBrush="{x:Null}" Foreground="#FF2196F3">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Click">
+                            <i:InvokeCommandAction Command="{Binding WeekDayClickCommand}" CommandParameter="{Binding ElementName=Btn5}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="{x:Null}"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter Property="Background" Value="Azure"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button x:Name="Btn6" Width="150" Content="СУББОТА" Height="50" BorderBrush="{x:Null}" Foreground="#FF2196F3">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Click">
+                            <i:InvokeCommandAction Command="{Binding WeekDayClickCommand}" CommandParameter="{Binding ElementName=Btn6}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="{x:Null}"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter Property="Background" Value="Azure"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="3" x:Name="GridMain" Background="Aquamarine">
+
+        </Grid>
     </Grid>
 </Window>
