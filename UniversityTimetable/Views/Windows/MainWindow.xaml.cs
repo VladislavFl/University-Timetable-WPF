@@ -1,4 +1,6 @@
 ﻿using System.Windows;
+using UniversityTimetable.Services;
+using UniversityTimetable.ViewModels;
 
 namespace UniversityTimetable
 {
@@ -10,6 +12,7 @@ namespace UniversityTimetable
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = new MainWindowViewModel(new TimetableService());
         }
     }
 }

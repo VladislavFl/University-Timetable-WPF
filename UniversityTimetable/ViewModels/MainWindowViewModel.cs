@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Input;
 using UniversityTimetable.Infrastructure.Commands;
-using UniversityTimetable.Models;
-using UniversityTimetable.Services;
 using UniversityTimetable.Services.Intefaces;
 using UniversityTimetable.ViewModels.Base;
 
@@ -38,16 +31,24 @@ namespace UniversityTimetable.ViewModels
         private bool CanCloseApplicationCommandExecute(object p) => true;
         #endregion
 
+        #region Datagrid Loaded
+        public ICommand ScheduleDatagridLoadedCommand { get; }
+
+        private void OnScheduleDatagridLoadedCommandExecuted(object p)
+        {
+            MessageBox.Show("ff!");
+        }
         #endregion
 
-        public MainWindowViewModel()
+        #endregion
+
+        public MainWindowViewModel(ITimetableService timetableService)
         {
-            ITimetableService timetableService = new TimetableService();
             _timetableService = timetableService;
-            //_timetableService.AddData();
 
             #region Команды
             CloseApplicationCommand = new LambdaCommand(OnCloseApplicationCommandExecuted, CanCloseApplicationCommandExecute);
+            ScheduleDatagridLoadedCommand = new LambdaCommand(OnScheduleDatagridLoadedCommandExecuted);
             #endregion
         }
     }
