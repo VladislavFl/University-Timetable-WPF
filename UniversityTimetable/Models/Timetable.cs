@@ -3,10 +3,11 @@
     public class Timetable
     {
         public int Id { get; set; }
-        public int GroupId { get; set; }
-        public int SubjectId { get; set; }
-        public int TeacherId { get; set; }
-        public int WeekDay { get; set; }
-        public int LessonId { get; set; }
+        public int NumLesson { get; set; }
+        public string Time { get; set; }
+        public string GroupName { get; set; }
+        public string Subject { get; set; }
+        public string Teacher { get; set; }
+        public int Classroom { get; set; }
     }
 }

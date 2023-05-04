@@ -25,8 +25,9 @@
 
         <Grid Grid.Row="0">
             <StackPanel HorizontalAlignment="Left" Margin="20 0">
-                <ComboBox FontSize="15" Width="50" Foreground="#FFA2A2A2" SelectedIndex="0" VerticalAlignment="Center">
-                    <ComboBoxItem Content="EN"/>
+                <ComboBox FontSize="15" Width="100" Foreground="#FFA2A2A2" SelectedIndex="0" VerticalAlignment="Center">
+                    <ComboBoxItem Content="22-A-1"/>
+                    <ComboBoxItem Content="22-A-2"/>
                 </ComboBox>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="20 0">
@@ -157,9 +158,29 @@
                 </Button>
             </StackPanel>
         </Grid>
+        
+        <!-- таблица расписания -->
+        <Grid Grid.Row="3" x:Name="GridMain">
+            <DataGrid ItemsSource="{Binding TimetableItems, UpdateSourceTrigger=PropertyChanged}" AutoGenerateColumns="False"
+                      CanUserAddRows="False" IsReadOnly="True">
 
-        <Grid Grid.Row="3" x:Name="GridMain" Background="Aquamarine">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Loaded">
+                        <i:InvokeCommandAction Command="{Binding DataGridLoadedCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="№" Width="70" Binding="{Binding NumLesson, UpdateSourceTrigger=PropertyChanged}"/>
+                    <DataGridTextColumn Header="Время занятий" Width="150" Binding="{Binding Time, UpdateSourceTrigger=PropertyChanged}"/>
 
+                    <DataGridTextColumn Header="Группа" Width="100" Binding="{Binding GroupName, UpdateSourceTrigger=PropertyChanged}"/>
+                    <DataGridTextColumn Header="Дисциплина" Width="200" Binding="{Binding Subject, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="False"/>
+                    <DataGridTextColumn Header="Преподаватель" Width="150" Binding="{Binding Teacher, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="False"/>
+                    <DataGridTextColumn Header="Аудитория" Width="100" Binding="{Binding Classroom, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="False"/>
+                </DataGrid.Columns>
+            </DataGrid>
         </Grid>
+        
     </Grid>
 </Window>
