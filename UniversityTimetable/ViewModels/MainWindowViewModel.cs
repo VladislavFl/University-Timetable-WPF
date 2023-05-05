@@ -1,5 +1,8 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using UniversityTimetable.Infrastructure.Commands;
 using UniversityTimetable.Models;
@@ -26,6 +29,13 @@ namespace UniversityTimetable.ViewModels
         {
             get => _timetableItems;
             set => Set(ref _timetableItems, value);
+        }
+
+        private DateTime _selectedMonday = DateTime.Now.AddDays(-1 * (7 + (DateTime.Now.DayOfWeek - DayOfWeek.Monday)) % 7).Date;
+        public DateTime SelectedMonday
+        {
+            get => _selectedMonday;
+            set => Set(ref _selectedMonday, value);
         }
 
         #endregion
@@ -72,6 +82,15 @@ namespace UniversityTimetable.ViewModels
         }
         #endregion
 
+        #region Событие смены даты
+        public ICommand CalendarSelectedDateChangedCommand { get; }
+
+        private void OnCalendarSelectedDateChangedCommandExecuted(object p)
+        {
+            SelectedMonday = SelectedMonday.AddDays(-1 * (7 + (SelectedMonday.DayOfWeek - DayOfWeek.Monday)) % 7).Date;
+        }
+        #endregion
+
         #endregion
 
         public MainWindowViewModel(ITimetableService timetableService)
@@ -82,6 +101,7 @@ namespace UniversityTimetable.ViewModels
             CloseApplicationCommand = new LambdaCommand(OnCloseApplicationCommandExecuted, CanCloseApplicationCommandExecute);
             WeekDayClickCommand = new LambdaCommand(OnWeekDayClickCommandExecuted);
             DataGridLoadedCommand = new LambdaCommand(OnDataGridLoadedCommandExecuted);
+            CalendarSelectedDateChangedCommand = new LambdaCommand(OnCalendarSelectedDateChangedCommandExecuted);
             #endregion
         }
     }
