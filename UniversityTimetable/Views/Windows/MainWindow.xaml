@@ -26,10 +26,13 @@
         <Grid Grid.Row="0">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="20 0">
                 <Label Content="Группа:" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0 0 5 0"/>
-                <ComboBox ItemsSource="{Binding GroupItems}" FontSize="15" Width="100" Foreground="#FFA2A2A2" SelectedIndex="0" VerticalAlignment="Center">
+                <ComboBox ItemsSource="{Binding GroupItems}" SelectedItem="{Binding CurrentGroup, UpdateSourceTrigger=PropertyChanged}" FontSize="15" Width="100" Foreground="#FFA2A2A2" SelectedIndex="0" VerticalAlignment="Center">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="Loaded">
                             <i:InvokeCommandAction Command="{Binding GroupComboboxLoadedCommand}"/>
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="SelectionChanged">
+                            <i:InvokeCommandAction Command="{Binding GroupComboboxSelectionChangedCommand}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </ComboBox>
@@ -180,7 +183,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <DataGrid Grid.Column="0" ItemsSource="{Binding LessonsTimeItems, UpdateSourceTrigger=PropertyChanged}" AutoGenerateColumns="False"
+            <DataGrid Grid.Column="0" ItemsSource="{Binding LessonsTimeItems, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" AutoGenerateColumns="False"
                       CanUserAddRows="False" IsReadOnly="True">
 
                 <i:Interaction.Triggers>
@@ -192,14 +195,20 @@
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="№" Width="70" Binding="{Binding NumLesson, UpdateSourceTrigger=PropertyChanged}"/>
                     <DataGridTextColumn Header="Время занятий" Width="150" Binding="{Binding Time, UpdateSourceTrigger=PropertyChanged}"/>
+                    <DataGridTextColumn Header="Группа" Width="100" Binding="{Binding GroupName, UpdateSourceTrigger=PropertyChanged}"/>
                 </DataGrid.Columns>
             </DataGrid>
 
-            <DataGrid Grid.Column="1" ItemsSource="{Binding TimetableItems, UpdateSourceTrigger=PropertyChanged}" AutoGenerateColumns="False"
-                      CanUserAddRows="False" IsReadOnly="True">
+            <DataGrid Grid.Column="1" ItemsSource="{Binding TimetableItems, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" AutoGenerateColumns="False"
+                      CanUserAddRows="False">
+
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Loaded">
+                        <i:InvokeCommandAction Command="{Binding TimetableDataGridLoadedCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
 
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Группа" Width="100" Binding="{Binding GroupName, UpdateSourceTrigger=PropertyChanged}"/>
                     <DataGridTextColumn Header="Дисциплина" Width="200" Binding="{Binding Subject, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="False"/>
                     <DataGridTextColumn Header="Преподаватель" Width="150" Binding="{Binding Teacher, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="False"/>
                     <DataGridTextColumn Header="Аудитория" Width="100" Binding="{Binding Classroom, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="False"/>

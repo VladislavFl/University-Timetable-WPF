@@ -22,6 +22,9 @@ namespace UniversityTimetable.Services
                 var query = from timetable in db.Timetables
                             select new Timetable
                             {
+                                Date = timetable.Date,
+                                DayOfWeek = timetable.DayOfWeek,
+                                NumLesson = timetable.NumLesson,
                                 GroupName = timetable.GroupName,
                                 Subject = timetable.Subject,
                                 Teacher = timetable.Teacher,
