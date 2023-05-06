@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -22,6 +23,7 @@ namespace UniversityTimetable.Services
                 var query = from timetable in db.Timetables
                             select new Timetable
                             {
+                                Id = timetable.Id,
                                 Date = timetable.Date,
                                 DayOfWeek = timetable.DayOfWeek,
                                 NumLesson = timetable.NumLesson,
@@ -32,6 +34,27 @@ namespace UniversityTimetable.Services
                             };
 
                 return query.ToList();
+            }
+        }
+
+        public void InsertOrUpdateItem(Timetable item)
+        {
+            using (AppDbContext db = new AppDbContext())
+            {
+                var lesson = db.Timetables.Where(c => c == item).FirstOrDefault();
+
+                if (lesson == null)
+                {
+                    db.Timetables.Add(item);
+                }
+                else
+                {
+                    lesson.Subject = item.Subject;
+                    lesson.Teacher = item.Teacher;
+                    lesson.Classroom = item.Classroom;
+                }
+
+                db.SaveChanges();
             }
         }
     }

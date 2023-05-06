@@ -21,6 +21,7 @@
             <RowDefinition Height="30"/>
             <RowDefinition Height="60"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0">
@@ -177,7 +178,7 @@
         </Grid>
 
         <!-- таблица расписания -->
-        <Grid Grid.Row="3" x:Name="GridMain">
+        <Grid Grid.Row="2" x:Name="GridMain">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
@@ -199,21 +200,32 @@
                 </DataGrid.Columns>
             </DataGrid>
 
-            <DataGrid Grid.Column="1" ItemsSource="{Binding TimetableItems, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" AutoGenerateColumns="False"
+            <DataGrid x:Name="TimetableDataGrid" Grid.Column="1" ItemsSource="{Binding TimetableItems, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" AutoGenerateColumns="False"
                       CanUserAddRows="False">
 
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="Loaded">
                         <i:InvokeCommandAction Command="{Binding TimetableDataGridLoadedCommand}"/>
                     </i:EventTrigger>
+                    <i:EventTrigger EventName="RowEditEnding">
+                        <i:InvokeCommandAction Command="{Binding TimetableDataGridRowEditEndingCommand}" PassEventArgsToCommand="True"/>
+                    </i:EventTrigger>
                 </i:Interaction.Triggers>
 
                 <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{Binding Id, UpdateSourceTrigger=PropertyChanged}" Visibility="Collapsed"/>
                     <DataGridTextColumn Header="Дисциплина" Width="200" Binding="{Binding Subject, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="False"/>
                     <DataGridTextColumn Header="Преподаватель" Width="150" Binding="{Binding Teacher, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="False"/>
                     <DataGridTextColumn Header="Аудитория" Width="100" Binding="{Binding Classroom, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="False"/>
                 </DataGrid.Columns>
             </DataGrid>
+        </Grid>
+
+        <Grid Grid.Row="3">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                <Button Content="Импорт в Excel" Margin="5 0 5 0"></Button>
+                <Button Content="Экспорт из Excel" Margin="5 0 5 0"></Button>
+            </StackPanel>
         </Grid>
 
     </Grid>

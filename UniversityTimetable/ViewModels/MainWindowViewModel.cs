@@ -115,6 +115,19 @@ namespace UniversityTimetable.ViewModels
         }
         #endregion
 
+        #region DataGrid с изменяемыми данными RowEditEnding (сохранение)
+        public ICommand TimetableDataGridRowEditEndingCommand { get; }
+
+        private void OnTimetableDataGridRowEditEndingCommandExecuted(object p)
+        {
+            if (p is DataGridRowEditEndingEventArgs item)
+            {
+                var editedItem = item.Row.DataContext as Timetable;
+                _timetableService.InsertOrUpdateItem(editedItem);
+            }
+        }
+        #endregion
+
         #region GroupCombobox Loaded
         public ICommand GroupComboboxLoadedCommand { get; }
 
@@ -158,16 +171,19 @@ namespace UniversityTimetable.ViewModels
 
         public MainWindowViewModel(ITimetableService timetableService)
         {
+            _timetableService = timetableService;
+
             ObservableCollection<Timetable> timetableItems = new ObservableCollection<Timetable>();
+            // заполняем 7 пустых строк
             for (int i = 0; i < 7; i++)
             {
                 timetableItems.Add(new Timetable());
             }
             TimetableItems = timetableItems;
 
-            _timetableService = timetableService;
-            var timetableItems2 = new ObservableCollection<Timetable>(_timetableService.GetTimetable());
-            var res = timetableItems2.Select(a => new { NumLesson =  a.NumLesson });
+            var timetableItems2 = new ObservableCollection<Timetable>(_timetableService.GetTimetable()); // получаем данные из БД
+            var res = timetableItems2.Select(a => new { NumLesson = a.NumLesson }); // делаем выборку по номеру пары
+            // чтобы восстановить корректно порядок пар в расписании
             foreach (var i in res.Where(a => a.NumLesson != 0))
             {
                 TimetableItems[i.NumLesson - 1] = timetableItems2[i.NumLesson - 1];
@@ -178,6 +194,8 @@ namespace UniversityTimetable.ViewModels
             WeekDayClickCommand = new LambdaCommand(OnWeekDayClickCommandExecuted);
             LessonsTimeDataGridLoadedCommand = new LambdaCommand(OnLessonsTimeDataGridLoadedCommandExecuted);
             TimetableDataGridLoadedCommand = new LambdaCommand(OnTimetableDataGridLoadedCommandExecuted);
+            TimetableDataGridRowEditEndingCommand = new LambdaCommand(OnTimetableDataGridRowEditEndingCommandExecuted);
+
             GroupComboboxLoadedCommand = new LambdaCommand(OnGroupComboboxLoadedCommandExecuted);
             GroupComboboxSelectionChangedCommand = new LambdaCommand(OnGroupComboboxSelectionChangedCommandExecuted);
             CalendarSelectedDateChangedCommand = new LambdaCommand(OnCalendarSelectedDateChangedCommandExecuted);

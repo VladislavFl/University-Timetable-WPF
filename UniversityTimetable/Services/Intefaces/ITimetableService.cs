@@ -11,5 +11,6 @@ namespace UniversityTimetable.Services.Intefaces
     interface ITimetableService
     {
         List<Timetable> GetTimetable();
+        void InsertOrUpdateItem(Timetable item);
     }
 }
