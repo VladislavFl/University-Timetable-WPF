@@ -1,22 +1,34 @@
-﻿using UniversityTimetable.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using UniversityTimetable.Data;
 using UniversityTimetable.Models;
 using UniversityTimetable.Services.Intefaces;
+using UniversityTimetable.ViewModels.Base;
 
 namespace UniversityTimetable.Services
 {
     class TimetableService : ITimetableService
     {
-        public void AddData()
+        public List<Timetable> GetTimetable()
         {
             // добавление данных
             using (AppDbContext db = new AppDbContext())
             {
-                // создаем два объекта User
-                //Timetable time = new Timetable { Id = 1, GroupId = 23, SubjectId = 3, TeacherId = 9, WeekDay = 5, LessonId = 6 };
+                // гарантируем, что база данных создана
+                db.Database.EnsureCreated();
+                // загружаем данные из БД
+                var query = from timetable in db.Timetables
+                            select new Timetable
+                            {
+                                GroupName = timetable.GroupName,
+                                Subject = timetable.Subject,
+                                Teacher = timetable.Teacher,
+                                Classroom = timetable.Classroom
+                            };
 
-                // добавляем их в бд
-                //db.Timetables.AddRange(time);
-                //db.SaveChanges();
+                return query.ToList();
             }
         }
     }

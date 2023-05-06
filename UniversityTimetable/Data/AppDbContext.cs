@@ -11,11 +11,15 @@ namespace UniversityTimetable.Data
 
         public AppDbContext()
         {
-            Database.EnsureCreated();
         }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=UniversityTimetable;Username=postgres;Password=postgres");
+#if DEBUG
+            optionsBuilder.UseSqlite("Data Source=../../../Database/UniversityTimetable.db");
+#else
+            optionsBuilder.UseSqlite("Data Source=Database/UniversityTimetable.db");
+#endif
         }
     }
 }
