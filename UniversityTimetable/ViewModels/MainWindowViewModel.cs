@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Markup;
+using System.Windows.Media;
 using UniversityTimetable.Infrastructure.Commands;
 using UniversityTimetable.Models;
 using UniversityTimetable.Services.Intefaces;
@@ -17,6 +18,8 @@ namespace UniversityTimetable.ViewModels
     internal class MainWindowViewModel : ViewModel
     {
         private readonly ITimetableService _timetableService;
+        private Button _btn;
+        private int _dayOfWeek;
 
         #region Свойства
 
@@ -83,6 +86,23 @@ namespace UniversityTimetable.ViewModels
 
         private void OnWeekDayClickCommandExecuted(object p)
         {
+            if (_btn != null)
+            {
+                _btn.Background = null;
+                _btn.Foreground = new SolidColorBrush(Color.FromArgb(255, 33, 150, 243));
+            }
+            
+            if (p is Button btn)
+            {
+                _btn = btn;
+                _btn.Background = Brushes.RoyalBlue;
+                _btn.Foreground = Brushes.White;
+
+                int result;
+                if (int.TryParse(_btn.Uid, out result))
+                    _dayOfWeek = result;
+            }
+            LoadingData();
         }
         #endregion
 
@@ -111,7 +131,7 @@ namespace UniversityTimetable.ViewModels
 
         private void OnTimetableDataGridLoadedCommandExecuted(object p)
         {
-            
+
         }
         #endregion
 
@@ -124,7 +144,7 @@ namespace UniversityTimetable.ViewModels
             {
                 var editedItem = item.Row.DataContext as Timetable;
                 editedItem.Date = SelectedMonday.ToString();
-                editedItem.DayOfWeek = 1;
+                editedItem.DayOfWeek = _dayOfWeek; // номер дня (от 1 до 6) означающий день недели
                 editedItem.NumLesson = item.Row.GetIndex() + 1; // номер пары = порядок строки
                 editedItem.GroupName = CurrentGroup;
                 _timetableService.InsertOrUpdateItem(editedItem);
@@ -138,7 +158,7 @@ namespace UniversityTimetable.ViewModels
         private void OnGroupComboboxLoadedCommandExecuted(object p)
         {
             // заполняем статическими данными выпадающий список с группами
-            GroupItems = new List<string> { "22-А-1", "22-С-1", "22-Д-1", "22-П-1", "22-ПД-1/1", "22-ПД-1/2", 
+            GroupItems = new List<string> { "22-А-1", "22-С-1", "22-Д-1", "22-П-1", "22-ПД-1/1", "22-ПД-1/2",
                                             "22-Э-1", "22-ИСП-1", "22-СА-1", "22-Р-1", "22-ГД-2", "21-ГС-3",
                                             "22-ПД-2/1", "22-ПД-2/2", "22-ПД-2/3", "21-ПД-3/1", "21-ПД-3/2",
                                             "21-ПД-3/3", "22-П-2", "21-П-3", "20-П-4", "22-3М-2", "21-3М-3",
@@ -155,7 +175,11 @@ namespace UniversityTimetable.ViewModels
 
         private void OnMainWindowLoadedCommandExecuted(object p)
         {
-            LoadingData();
+            if (p is Button btn)
+                _btn = btn; // сохраняем объект кнопки "понедельник"
+
+            _dayOfWeek = 1;
+            LoadingData(); // загружаем данные
         }
         #endregion
 
@@ -178,6 +202,7 @@ namespace UniversityTimetable.ViewModels
         private void OnCalendarSelectedDateChangedCommandExecuted(object p)
         {
             SelectedMonday = SelectedMonday.AddDays(-1 * (7 + (SelectedMonday.DayOfWeek - DayOfWeek.Monday)) % 7).Date;
+            LoadingData();
         }
         #endregion
 
@@ -198,7 +223,7 @@ namespace UniversityTimetable.ViewModels
                 }
                 TimetableItems = timetableItems;
 
-                var timetableItems2 = new ObservableCollection<Timetable>(_timetableService.GetTimetable(CurrentGroup, SelectedMonday.ToString())); // получаем данные из БД
+                var timetableItems2 = new ObservableCollection<Timetable>(_timetableService.GetTimetable(CurrentGroup, SelectedMonday.ToString(), _dayOfWeek)); // получаем данные из БД
                 if (timetableItems2 == null) return;
 
                 var res = timetableItems2.Select(a => new { NumLesson = a.NumLesson }); // делаем выборку по номеру пары

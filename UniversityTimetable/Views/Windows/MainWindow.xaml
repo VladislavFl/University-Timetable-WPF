@@ -17,7 +17,7 @@
 
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="ContentRendered">
-            <i:InvokeCommandAction Command="{Binding MainWindowLoadedCommand}"/>
+            <i:InvokeCommandAction Command="{Binding MainWindowLoadedCommand}" CommandParameter="{Binding ElementName=Btn1}"/>
         </i:EventTrigger>
     </i:Interaction.Triggers>
 
@@ -72,7 +72,7 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="10 0" Grid.ColumnSpan="2">
-                <Button x:Name="Btn1" Width="150" Content="ПОНЕДЕЛЬНИК" Height="50" BorderBrush="{x:Null}" Foreground="#FF2196F3">
+                <Button x:Name="Btn1" Uid="1" Width="150" Content="ПОНЕДЕЛЬНИК" Height="50" Background="RoyalBlue" BorderBrush="{x:Null}" Foreground="White">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="Click">
                             <i:InvokeCommandAction Command="{Binding WeekDayClickCommand}" CommandParameter="{Binding ElementName=Btn1}"/>
@@ -90,7 +90,7 @@
                         </Style>
                     </Button.Style>
                 </Button>
-                <Button x:Name="Btn2" Width="150" Content="ВТОРНИК" Height="50" BorderBrush="{x:Null}" Foreground="#FF2196F3">
+                <Button x:Name="Btn2" Uid="2" Width="150" Content="ВТОРНИК" Height="50" BorderBrush="{x:Null}" Foreground="#FF2196F3">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="Click">
                             <i:InvokeCommandAction Command="{Binding WeekDayClickCommand}" CommandParameter="{Binding ElementName=Btn2}"/>
@@ -108,7 +108,7 @@
                         </Style>
                     </Button.Style>
                 </Button>
-                <Button x:Name="Btn3" Width="150" Content="СРЕДА" Height="50" BorderBrush="{x:Null}" Foreground="#FF2196F3">
+                <Button x:Name="Btn3" Uid="3" Width="150" Content="СРЕДА" Height="50" BorderBrush="{x:Null}" Foreground="#FF2196F3">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="Click">
                             <i:InvokeCommandAction Command="{Binding WeekDayClickCommand}" CommandParameter="{Binding ElementName=Btn3}"/>
@@ -126,7 +126,7 @@
                         </Style>
                     </Button.Style>
                 </Button>
-                <Button x:Name="Btn4" Width="150" Content="ЧЕТВЕРГ" Height="50" BorderBrush="{x:Null}" Foreground="#FF2196F3">
+                <Button x:Name="Btn4" Uid="4" Width="150" Content="ЧЕТВЕРГ" Height="50" BorderBrush="{x:Null}" Foreground="#FF2196F3">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="Click">
                             <i:InvokeCommandAction Command="{Binding WeekDayClickCommand}" CommandParameter="{Binding ElementName=Btn4}"/>
@@ -144,7 +144,7 @@
                         </Style>
                     </Button.Style>
                 </Button>
-                <Button x:Name="Btn5" Width="150" Content="ПЯТНИЦА" Height="50" BorderBrush="{x:Null}" Foreground="#FF2196F3">
+                <Button x:Name="Btn5" Uid="5" Width="150" Content="ПЯТНИЦА" Height="50" BorderBrush="{x:Null}" Foreground="#FF2196F3">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="Click">
                             <i:InvokeCommandAction Command="{Binding WeekDayClickCommand}" CommandParameter="{Binding ElementName=Btn5}"/>
@@ -162,7 +162,7 @@
                         </Style>
                     </Button.Style>
                 </Button>
-                <Button x:Name="Btn6" Width="150" Content="СУББОТА" Height="50" BorderBrush="{x:Null}" Foreground="#FF2196F3">
+                <Button x:Name="Btn6" Uid="6" Width="150" Content="СУББОТА" Height="50" BorderBrush="{x:Null}" Foreground="#FF2196F3">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="Click">
                             <i:InvokeCommandAction Command="{Binding WeekDayClickCommand}" CommandParameter="{Binding ElementName=Btn6}"/>

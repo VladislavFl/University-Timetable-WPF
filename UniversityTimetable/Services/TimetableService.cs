@@ -10,7 +10,7 @@ namespace UniversityTimetable.Services
 {
     class TimetableService : ITimetableService
     {
-        public List<Timetable>? GetTimetable(string groupName, string date)
+        public List<Timetable>? GetTimetable(string groupName, string date, int dayOfWeek)
         {
             try
             {
@@ -21,11 +21,11 @@ namespace UniversityTimetable.Services
                     db.Database.EnsureCreated();
                     // загружаем данные из БД
                     var query = from timetable in db.Timetables
-                                where timetable.GroupName == groupName && timetable.Date == date
+                                where timetable.GroupName == groupName && timetable.Date == date && timetable.DayOfWeek == dayOfWeek
                                 select new Timetable
                                 {
                                     Id = timetable.Id,
-                                    Date = date,
+                                    Date = timetable.Date,
                                     DayOfWeek = timetable.DayOfWeek,
                                     NumLesson = timetable.NumLesson,
                                     GroupName = timetable.GroupName,
