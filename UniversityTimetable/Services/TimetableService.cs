@@ -74,5 +74,39 @@ namespace UniversityTimetable.Services
                 MessageBox.Show(ex.Message);
             }
         }
+
+        public List<int?>? GetBusyClassrooms(string groupName, string date, int dayOfWeek, int? numLesson = null)
+        {
+            try
+            {
+                using (AppDbContext db = new AppDbContext())
+                {
+                    // получаем занятые аудитории
+                    IQueryable<Timetable> classrooms;
+                    // если numLesson == null - выводим список свободных аудиторий при старте программы
+                    if (numLesson == null)
+                    {
+                        classrooms = db.Timetables.Where(c => c.Classroom != null && c.Date == date && c.DayOfWeek == dayOfWeek);
+                    }
+                    // в остальных случаях проверяем и по номеру пары
+                    else
+                    {
+                        classrooms = db.Timetables.Where(c => c.Classroom != null && c.Date == date && c.DayOfWeek == dayOfWeek && c.NumLesson == numLesson);
+                    }
+
+                    List<int?> result = new List<int?>();
+                    foreach (var item in classrooms)
+                    {
+                        result.Add(item.Classroom);
+                    }
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return null;
+            }
+        }
     }
 }

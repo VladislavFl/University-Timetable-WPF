@@ -12,5 +12,6 @@ namespace UniversityTimetable.Services.Intefaces
     {
         List<Timetable>? GetTimetable(string groupName, string date, int dayOfWeek);
         void InsertOrUpdateItem(Timetable item);
+        List<int?>? GetBusyClassrooms(string groupName, string date, int dayOfWeek, int? numLesson = null);
     }
 }
