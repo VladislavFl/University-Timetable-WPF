@@ -1,60 +1,77 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows;
 using UniversityTimetable.Data;
 using UniversityTimetable.Models;
 using UniversityTimetable.Services.Intefaces;
-using UniversityTimetable.ViewModels.Base;
 
 namespace UniversityTimetable.Services
 {
     class TimetableService : ITimetableService
     {
-        public List<Timetable> GetTimetable()
+        public List<Timetable>? GetTimetable(string groupName, string date)
         {
-            // добавление данных
-            using (AppDbContext db = new AppDbContext())
+            try
             {
-                // гарантируем, что база данных создана
-                db.Database.EnsureCreated();
-                // загружаем данные из БД
-                var query = from timetable in db.Timetables
-                            select new Timetable
-                            {
-                                Id = timetable.Id,
-                                Date = timetable.Date,
-                                DayOfWeek = timetable.DayOfWeek,
-                                NumLesson = timetable.NumLesson,
-                                GroupName = timetable.GroupName,
-                                Subject = timetable.Subject,
-                                Teacher = timetable.Teacher,
-                                Classroom = timetable.Classroom
-                            };
+                // добавление данных
+                using (AppDbContext db = new AppDbContext())
+                {
+                    // гарантируем, что база данных создана
+                    db.Database.EnsureCreated();
+                    // загружаем данные из БД
+                    var query = from timetable in db.Timetables
+                                where timetable.GroupName == groupName && timetable.Date == date
+                                select new Timetable
+                                {
+                                    Id = timetable.Id,
+                                    Date = date,
+                                    DayOfWeek = timetable.DayOfWeek,
+                                    NumLesson = timetable.NumLesson,
+                                    GroupName = timetable.GroupName,
+                                    Subject = timetable.Subject,
+                                    Teacher = timetable.Teacher,
+                                    Classroom = timetable.Classroom
+                                };
 
-                return query.ToList();
+                    return query.ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return null;
             }
         }
 
         public void InsertOrUpdateItem(Timetable item)
         {
-            using (AppDbContext db = new AppDbContext())
+            try
             {
-                var lesson = db.Timetables.Where(c => c == item).FirstOrDefault();
-
-                if (lesson == null)
+                using (AppDbContext db = new AppDbContext())
                 {
-                    db.Timetables.Add(item);
-                }
-                else
-                {
-                    lesson.Subject = item.Subject;
-                    lesson.Teacher = item.Teacher;
-                    lesson.Classroom = item.Classroom;
-                }
+                    // проверяем, существует ли такой элемент в БД
+                    var lesson = db.Timetables.Where(c => c == item).FirstOrDefault();
 
-                db.SaveChanges();
+                    // если не существует, то создаём новую запись в БД
+                    if (lesson == null)
+                    {
+                        db.Timetables.Add(item);
+                    }
+                    // иначе обновляем найденный элемент
+                    else
+                    {
+                        lesson.Subject = item.Subject;
+                        lesson.Teacher = item.Teacher;
+                        lesson.Classroom = item.Classroom;
+                    }
+
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
             }
         }
     }

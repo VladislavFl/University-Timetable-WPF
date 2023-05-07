@@ -12,7 +12,7 @@ namespace UniversityTimetable.Models
         private int? _classroom;
 
         public int Id { get; set; }
-        public DateTime? Date { get; set; }
+        public string? Date { get; set; }
         public int DayOfWeek { get; set; }
         public int NumLesson { get; set; }
         public string? GroupName { get; set; }

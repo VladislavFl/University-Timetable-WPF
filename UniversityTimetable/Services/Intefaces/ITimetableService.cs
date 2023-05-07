@@ -10,7 +10,7 @@ namespace UniversityTimetable.Services.Intefaces
 {
     interface ITimetableService
     {
-        List<Timetable> GetTimetable();
+        List<Timetable>? GetTimetable(string groupName, string date);
         void InsertOrUpdateItem(Timetable item);
     }
 }

@@ -123,6 +123,10 @@ namespace UniversityTimetable.ViewModels
             if (p is DataGridRowEditEndingEventArgs item)
             {
                 var editedItem = item.Row.DataContext as Timetable;
+                editedItem.Date = SelectedMonday.ToString();
+                editedItem.DayOfWeek = 1;
+                editedItem.NumLesson = item.Row.GetIndex() + 1; // номер пары = порядок строки
+                editedItem.GroupName = CurrentGroup;
                 _timetableService.InsertOrUpdateItem(editedItem);
             }
         }
@@ -146,11 +150,21 @@ namespace UniversityTimetable.ViewModels
         }
         #endregion
 
+        #region ContentRendered - событие загрузки всего контента главного окна
+        public ICommand MainWindowLoadedCommand { get; }
+
+        private void OnMainWindowLoadedCommandExecuted(object p)
+        {
+            LoadingData();
+        }
+        #endregion
+
         #region GroupCombobox SelectionChanged
         public ICommand GroupComboboxSelectionChangedCommand { get; }
 
         private void OnGroupComboboxSelectionChangedCommandExecuted(object p)
         {
+            LoadingData();
             for (int i = 0; i < LessonsTimeItems.Count; i++)
             {
                 LessonsTimeItems[i].GroupName = CurrentGroup;
@@ -169,25 +183,43 @@ namespace UniversityTimetable.ViewModels
 
         #endregion
 
+        #region Метод загрузки данных в таблицу
+        private void LoadingData()
+        {
+            try
+            {
+                if (TimetableItems != null) TimetableItems.Clear();
+
+                ObservableCollection<Timetable> timetableItems = new ObservableCollection<Timetable>();
+                // заполняем 7 пустых строк
+                for (int i = 0; i < 7; i++)
+                {
+                    timetableItems.Add(new Timetable());
+                }
+                TimetableItems = timetableItems;
+
+                var timetableItems2 = new ObservableCollection<Timetable>(_timetableService.GetTimetable(CurrentGroup, SelectedMonday.ToString())); // получаем данные из БД
+                if (timetableItems2 == null) return;
+
+                var res = timetableItems2.Select(a => new { NumLesson = a.NumLesson }); // делаем выборку по номеру пары
+                // чтобы восстановить корректно порядок пар в расписании
+                int counter = 0;
+                foreach (var i in res.Where(a => a.NumLesson != 0))
+                {
+                    TimetableItems[i.NumLesson - 1] = timetableItems2[counter];
+                    counter++;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+        #endregion
+
         public MainWindowViewModel(ITimetableService timetableService)
         {
             _timetableService = timetableService;
-
-            ObservableCollection<Timetable> timetableItems = new ObservableCollection<Timetable>();
-            // заполняем 7 пустых строк
-            for (int i = 0; i < 7; i++)
-            {
-                timetableItems.Add(new Timetable());
-            }
-            TimetableItems = timetableItems;
-
-            var timetableItems2 = new ObservableCollection<Timetable>(_timetableService.GetTimetable()); // получаем данные из БД
-            var res = timetableItems2.Select(a => new { NumLesson = a.NumLesson }); // делаем выборку по номеру пары
-            // чтобы восстановить корректно порядок пар в расписании
-            foreach (var i in res.Where(a => a.NumLesson != 0))
-            {
-                TimetableItems[i.NumLesson - 1] = timetableItems2[i.NumLesson - 1];
-            }
 
             #region Команды
             CloseApplicationCommand = new LambdaCommand(OnCloseApplicationCommandExecuted, CanCloseApplicationCommandExecute);
@@ -195,6 +227,7 @@ namespace UniversityTimetable.ViewModels
             LessonsTimeDataGridLoadedCommand = new LambdaCommand(OnLessonsTimeDataGridLoadedCommandExecuted);
             TimetableDataGridLoadedCommand = new LambdaCommand(OnTimetableDataGridLoadedCommandExecuted);
             TimetableDataGridRowEditEndingCommand = new LambdaCommand(OnTimetableDataGridRowEditEndingCommandExecuted);
+            MainWindowLoadedCommand = new LambdaCommand(OnMainWindowLoadedCommandExecuted);
 
             GroupComboboxLoadedCommand = new LambdaCommand(OnGroupComboboxLoadedCommandExecuted);
             GroupComboboxSelectionChangedCommand = new LambdaCommand(OnGroupComboboxSelectionChangedCommandExecuted);

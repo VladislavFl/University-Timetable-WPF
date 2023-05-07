@@ -15,6 +15,12 @@
         FontFamily="{materialDesign:MaterialDesignFont}"
         Title="{Binding Title}" Height="700" Width="1200">
 
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="ContentRendered">
+            <i:InvokeCommandAction Command="{Binding MainWindowLoadedCommand}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
     <Grid Margin="5">
 
         <Grid.RowDefinitions>
@@ -185,7 +191,7 @@
             </Grid.ColumnDefinitions>
 
             <DataGrid Grid.Column="0" ItemsSource="{Binding LessonsTimeItems, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" AutoGenerateColumns="False"
-                      CanUserAddRows="False" IsReadOnly="True">
+                      CanUserAddRows="False" CanUserSortColumns="False" IsReadOnly="True">
 
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="Loaded">
@@ -201,7 +207,7 @@
             </DataGrid>
 
             <DataGrid x:Name="TimetableDataGrid" Grid.Column="1" ItemsSource="{Binding TimetableItems, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" AutoGenerateColumns="False"
-                      CanUserAddRows="False">
+                      CanUserAddRows="False" CanUserSortColumns="False">
 
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="Loaded">
