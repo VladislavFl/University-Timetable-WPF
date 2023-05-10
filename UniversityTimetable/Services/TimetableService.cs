@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using UniversityTimetable.Data;
 using UniversityTimetable.Models;
@@ -10,7 +12,7 @@ namespace UniversityTimetable.Services
 {
     class TimetableService : ITimetableService
     {
-        public List<Timetable>? GetTimetable(string groupName, string date, int dayOfWeek)
+        public async Task<List<Timetable>?> GetTimetable(string groupName, string date, int dayOfWeek)
         {
             try
             {
@@ -18,7 +20,7 @@ namespace UniversityTimetable.Services
                 using (AppDbContext db = new AppDbContext())
                 {
                     // гарантируем, что база данных создана
-                    db.Database.EnsureCreated();
+                    await db.Database.EnsureCreatedAsync();
                     // загружаем данные из БД
                     var query = from timetable in db.Timetables
                                 where timetable.GroupName == groupName && timetable.Date == date && timetable.DayOfWeek == dayOfWeek
@@ -34,7 +36,7 @@ namespace UniversityTimetable.Services
                                     Classroom = timetable.Classroom
                                 };
 
-                    return query.ToList();
+                    return await query.ToListAsync();
                 }
             }
             catch (Exception ex)
@@ -44,19 +46,19 @@ namespace UniversityTimetable.Services
             }
         }
 
-        public void InsertOrUpdateItem(Timetable item)
+        public async Task InsertOrUpdateItem(Timetable item)
         {
             try
             {
                 using (AppDbContext db = new AppDbContext())
                 {
                     // проверяем, существует ли такой элемент в БД
-                    var lesson = db.Timetables.Where(c => c == item).FirstOrDefault();
+                    var lesson = await db.Timetables.Where(c => c == item).FirstOrDefaultAsync();
 
                     // если не существует, то создаём новую запись в БД
                     if (lesson == null)
                     {
-                        db.Timetables.Add(item);
+                        await db.Timetables.AddAsync(item);
                     }
                     // иначе обновляем найденный элемент
                     else
@@ -66,7 +68,7 @@ namespace UniversityTimetable.Services
                         lesson.Classroom = item.Classroom;
                     }
 
-                    db.SaveChanges();
+                    await db.SaveChangesAsync();
                 }
             }
             catch (Exception ex)
@@ -75,24 +77,29 @@ namespace UniversityTimetable.Services
             }
         }
 
-        public List<int?>? GetBusyClassrooms(string groupName, string date, int dayOfWeek, int? numLesson = null)
+        public async Task<int> CheckingBusyClassrooms(string date, int dayOfWeek, int id, int? classroom, int numLesson)
         {
             try
             {
                 using (AppDbContext db = new AppDbContext())
                 {
-                    // получаем занятые аудитории
-                    IQueryable<Timetable> classrooms;
-                    // если numLesson == null - выводим список свободных аудиторий при старте программы
-                    if (numLesson == null)
-                    {
-                        classrooms = db.Timetables.Where(c => c.Classroom != null && c.Date == date && c.DayOfWeek == dayOfWeek);
-                    }
-                    // в остальных случаях проверяем и по номеру пары
-                    else
-                    {
-                        classrooms = db.Timetables.Where(c => c.Classroom != null && c.Date == date && c.DayOfWeek == dayOfWeek && c.NumLesson == numLesson);
-                    }
+                    return await db.Timetables.Where(c => c.Id != id && c.Classroom != null && c.Classroom == classroom && c.Date == date && c.DayOfWeek == dayOfWeek && c.NumLesson == numLesson).CountAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return 0;
+            }
+        }
+
+        public List<int?>? GetBusyClassrooms(string date, int dayOfWeek)
+        {
+            try
+            {
+                using (AppDbContext db = new AppDbContext())
+                {
+                    var classrooms = db.Timetables.Where(c => c.Classroom != null && c.Date == date && c.DayOfWeek == dayOfWeek);
 
                     List<int?> result = new List<int?>();
                     foreach (var item in classrooms)

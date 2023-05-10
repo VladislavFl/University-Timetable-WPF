@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -91,7 +92,7 @@ namespace UniversityTimetable.ViewModels
         #region Клик по дням недели
         public ICommand WeekDayClickCommand { get; }
 
-        private void OnWeekDayClickCommandExecuted(object p)
+        private async void OnWeekDayClickCommandExecuted(object p)
         {
             if (_btn != null)
             {
@@ -109,7 +110,7 @@ namespace UniversityTimetable.ViewModels
                 if (int.TryParse(_btn.Uid, out result))
                     _dayOfWeek = result;
             }
-            LoadingData();
+            await LoadingData();
             CheckingFreeClassrooms();
         }
         #endregion
@@ -145,7 +146,7 @@ namespace UniversityTimetable.ViewModels
         #region DataGrid с изменяемыми данными RowEditEnding (сохранение)
         public ICommand TimetableDataGridRowEditEndingCommand { get; }
 
-        private void OnTimetableDataGridRowEditEndingCommandExecuted(object p)
+        private async void OnTimetableDataGridRowEditEndingCommandExecuted(object p)
         {
             if (p is DataGridRowEditEndingEventArgs item)
             {
@@ -157,20 +158,19 @@ namespace UniversityTimetable.ViewModels
 
                 if (_classroomsLst.Contains(editedItem.Classroom))
                 {
-                    if (_timetableService.GetBusyClassrooms(CurrentGroup, SelectedMonday.ToString(), _dayOfWeek, editedItem.NumLesson).Contains(editedItem.Classroom))
+                    if (_timetableService.CheckingBusyClassrooms(SelectedMonday.ToString(), _dayOfWeek, editedItem.Id, editedItem.Classroom, editedItem.NumLesson).Result >= 1)
                     {
                         MessageBox.Show("Эта аудитория уже занята");
                         editedItem.Classroom = null;
                     }
+                    await _timetableService.InsertOrUpdateItem(editedItem); // сохраняем или обновляем данные
+                    CheckingFreeClassrooms();
                 }
                 else
                 {
                     MessageBox.Show("Такой аудитории не существует");
                     editedItem.Classroom = null;
                 }
-
-                _timetableService.InsertOrUpdateItem(editedItem); // сохраняем или обновляем данные
-                CheckingFreeClassrooms();
             }
         }
         #endregion
@@ -196,13 +196,13 @@ namespace UniversityTimetable.ViewModels
         #region ContentRendered - событие загрузки всего контента главного окна
         public ICommand MainWindowLoadedCommand { get; }
 
-        private void OnMainWindowLoadedCommandExecuted(object p)
+        private async void OnMainWindowLoadedCommandExecuted(object p)
         {
             if (p is Button btn)
                 _btn = btn; // сохраняем объект кнопки "понедельник"
 
             _dayOfWeek = 1;
-            LoadingData(); // загружаем данные
+            await LoadingData(); // загружаем данные
             CheckingFreeClassrooms(); // проверяем свободные аудитории
         }
         #endregion
@@ -210,9 +210,9 @@ namespace UniversityTimetable.ViewModels
         #region GroupCombobox SelectionChanged
         public ICommand GroupComboboxSelectionChangedCommand { get; }
 
-        private void OnGroupComboboxSelectionChangedCommandExecuted(object p)
+        private async void OnGroupComboboxSelectionChangedCommandExecuted(object p)
         {
-            LoadingData();
+            await LoadingData();
             for (int i = 0; i < LessonsTimeItems.Count; i++)
             {
                 LessonsTimeItems[i].GroupName = CurrentGroup;
@@ -223,10 +223,10 @@ namespace UniversityTimetable.ViewModels
         #region Событие смены даты
         public ICommand CalendarSelectedDateChangedCommand { get; }
 
-        private void OnCalendarSelectedDateChangedCommandExecuted(object p)
+        private async void OnCalendarSelectedDateChangedCommandExecuted(object p)
         {
             SelectedMonday = SelectedMonday.AddDays(-1 * (7 + (SelectedMonday.DayOfWeek - DayOfWeek.Monday)) % 7).Date;
-            LoadingData();
+            await LoadingData();
             CheckingFreeClassrooms();
         }
         #endregion
@@ -234,7 +234,7 @@ namespace UniversityTimetable.ViewModels
         #endregion
 
         #region Метод загрузки данных в таблицу
-        private void LoadingData()
+        private async Task LoadingData()
         {
             try
             {
@@ -248,7 +248,7 @@ namespace UniversityTimetable.ViewModels
                 }
                 TimetableItems = timetableItems;
 
-                var timetableItems2 = new ObservableCollection<Timetable>(_timetableService.GetTimetable(CurrentGroup, SelectedMonday.ToString(), _dayOfWeek)); // получаем данные из БД
+                var timetableItems2 = new ObservableCollection<Timetable>(await _timetableService.GetTimetable(CurrentGroup, SelectedMonday.ToString(), _dayOfWeek)); // получаем данные из БД
                 if (timetableItems2 == null) return;
 
                 var res = timetableItems2.Select(a => new { NumLesson = a.NumLesson }); // делаем выборку по номеру пары
@@ -274,7 +274,7 @@ namespace UniversityTimetable.ViewModels
             List<int> classroomsItems = new List<int> { 106, 109, 110, 111, 112, 115, 116, 117, 204, 205, 208, 207, 209, 210,
                                               211, 215, 216, 217, 303, 304, 305, 306, 307, 308, 309, 310, 312 };
 
-            var result = _timetableService.GetBusyClassrooms(CurrentGroup, SelectedMonday.ToString(), _dayOfWeek, null);
+            var result = _timetableService.GetBusyClassrooms(SelectedMonday.ToString(), _dayOfWeek);
             classroomsItems.RemoveAll(x => result.Contains(x)); // убираем из искомого списка все уже занятые аудитории
 
             foreach (var item in classroomsItems)
